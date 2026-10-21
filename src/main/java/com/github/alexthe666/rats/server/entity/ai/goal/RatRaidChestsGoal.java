@@ -1,0 +1,123 @@
+package com.github.alexthe666.rats.server.entity.ai.goal;
+
+import com.github.alexthe666.rats.RatConfig;
+import com.github.alexthe666.rats.RatsMod;
+import com.github.alexthe666.rats.data.tags.RatsBlockTags;
+import com.github.alexthe666.rats.registry.RatsItemRegistry;
+import com.github.alexthe666.rats.server.entity.rat.DiggingRat;
+import com.github.alexthe666.rats.server.misc.RatPathingHelper;
+import com.github.alexthe666.rats.server.misc.RatUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.neoforged.neoforge.event.EventHooks;
+
+public class RatRaidChestsGoal extends RatMoveToBlockGoal {
+
+	private final DiggingRat rat;
+
+	public RatRaidChestsGoal(DiggingRat entity) {
+		super(entity, 1.0F, 16);
+		this.rat = entity;
+	}
+
+	@Override
+	public boolean canUse() {
+		if (!this.rat.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+			return false;
+		}
+		if (!this.rat.canMove() || this.rat.getOwner() != null || !RatConfig.ratsStealItems) {
+			return false;
+		}
+		return (this.rat.level() instanceof net.minecraft.server.level.ServerLevel _sl && net.neoforged.neoforge.event.EventHooks.canEntityGrief(_sl, this.rat)) && super.canUse();
+	}
+
+	@Override
+	public boolean canContinueToUse() {
+		return super.canContinueToUse() && this.rat.getItemInHand(InteractionHand.MAIN_HAND).isEmpty();
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (this.isReachedTarget()) {
+			BlockEntity entity = this.rat.level().getBlockEntity(this.blockPos);
+			if (entity instanceof Container feeder) {
+				double distance = this.rat.distanceToSqr(this.blockPos.getX(), this.blockPos.getY(), this.blockPos.getZ());
+				if (distance < 6.25F && distance > 2.72F) {
+					this.toggleChest(feeder, true);
+					this.rat.level().playSound(null, this.blockPos, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS);
+				}
+				if (distance <= 2.89F) {
+					this.toggleChest(feeder, false);
+					this.rat.level().playSound(null, this.blockPos, SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS);
+					ItemStack stack = RatUtils.getFoodFromInventory(feeder, this.rat.level().getRandom());
+					if (stack != ItemStack.EMPTY) {
+						ItemStack duplicate = stack.copy();
+						duplicate.setCount(1);
+						if (!this.rat.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+							this.rat.spawnAtLocation(this.rat.getItemInHand(InteractionHand.MAIN_HAND), 0.0F);
+						}
+						this.rat.setItemInHand(InteractionHand.MAIN_HAND, duplicate);
+						stack.shrink(1);
+						if (RatConfig.ratsContaminateFood && this.rat.getRandom().nextInt(3) == 0) {
+							int slotToReplace = RatUtils.getContaminatedSlot(feeder, this.rat.level().getRandom());
+							if (slotToReplace != -1) {
+								if (feeder.getItem(slotToReplace).isEmpty()) {
+									ItemStack stack1 = new ItemStack(RatsItemRegistry.CONTAMINATED_FOOD.get());
+									feeder.setItem(slotToReplace, stack1);
+								} else if (feeder.getItem(slotToReplace).is(RatsItemRegistry.CONTAMINATED_FOOD.get())) {
+									feeder.getItem(slotToReplace).grow(1);
+								}
+							}
+						}
+						this.rat.setFleePos(this.blockPos);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	protected boolean isValidTarget(LevelReader reader, BlockPos pos) {
+		if (!reader.getBlockState(pos).is(RatsBlockTags.UNRAIDABLE_CONTAINERS)) {
+			if (reader.getBlockState(pos).getBlock() instanceof EntityBlock) {
+				if (!RatPathingHelper.canSeeOrDigToBlock(this.rat, pos)) return false;
+				if (RatUtils.isBlockProtected(this.rat.level(), pos, this.rat)) return false;
+				BlockEntity entity = reader.getBlockEntity(pos);
+				if (entity instanceof Container inventory) {
+					try {
+						if (entity instanceof RandomizableContainerBlockEntity container && container.saveWithFullMetadata(reader.registryAccess()).contains(RandomizableContainerBlockEntity.LOOT_TABLE_TAG))
+							return false;
+						if (!inventory.isEmpty() && RatUtils.doesContainFood(inventory)) {
+							return true;
+						}
+					} catch (Exception e) {
+						RatsMod.LOGGER.warn("Rats stopped a {} from causing a crash during access", entity.getClass().getSimpleName(), e);
+						return false;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public void toggleChest(Container te, boolean open) {
+		if (te instanceof ChestBlockEntity chest) {
+			if (open) {
+				this.rat.level().blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 1);
+			} else {
+				this.rat.level().blockEvent(this.blockPos, chest.getBlockState().getBlock(), 1, 0);
+
+			}
+		}
+	}
+}

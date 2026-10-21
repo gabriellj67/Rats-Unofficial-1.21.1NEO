@@ -1,0 +1,10 @@
+{
+  "values": [
+    "rats:pet_shop_owner/2/emerald_to_cooked_rat",
+    "rats:pet_shop_owner/2/garbage_and_emeralds_to_plastic_waste",
+    "rats:pet_shop_owner/2/emerald_to_marbled_cheese_raw",
+    "rats:pet_shop_owner/2/emerald_to_garbage_pile",
+    "rats:pet_shop_owner/2/raw_plastic_to_emerald",
+    "rats:pet_shop_owner/2/rat_flute_to_emerald"
+  ]
+}

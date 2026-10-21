@@ -1,0 +1,243 @@
+package com.github.alexthe666.rats.server.entity.ai.goal.harvest;
+
+import com.github.alexthe666.rats.RatConfig;
+import com.github.alexthe666.rats.data.tags.RatsBlockTags;
+import com.github.alexthe666.rats.registry.RatsBlockRegistry;
+import com.github.alexthe666.rats.server.block.entity.RatQuarryBlockEntity;
+import com.github.alexthe666.rats.server.entity.rat.TamedRat;
+import com.github.alexthe666.rats.server.misc.RatUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+
+public class RatQuarryGoal extends BaseRatHarvestGoal {
+	private final TamedRat rat;
+	private int breakingTime;
+	private int previousBreakProgress;
+	private BlockState prevMiningState = null;
+
+	public RatQuarryGoal(TamedRat rat) {
+		super(rat);
+		this.rat = rat;
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+	}
+
+	@Override
+	public boolean canUse() {
+		if (!super.canUse() || this.rat.getDepositPos().isEmpty() || !this.rat.getDepositPos().get().dimension().equals(this.rat.level().dimension()) || !this.rat.level().getBlockState(this.rat.getDepositPos().get().pos()).is(RatsBlockRegistry.RAT_QUARRY.get()) || !this.checkTheBasics(false, false)) {
+			return false;
+		}
+
+		RatQuarryBlockEntity quarry = this.getQuarry();
+		if (quarry == null || !this.hasRoomInQuarry(quarry)) {
+			return false;
+		}
+
+		this.resetTarget();
+		return this.getTargetBlock() != null;
+	}
+
+	@Nullable
+	private RatQuarryBlockEntity getQuarry() {
+		GlobalPos quarryPos = this.rat.getDepositPos().orElse(null);
+		if (quarryPos == null || !quarryPos.dimension().equals(this.rat.level().dimension())) {
+			return null;
+		}
+		return this.rat.level().getBlockEntity(quarryPos.pos()) instanceof RatQuarryBlockEntity quarry ? quarry : null;
+	}
+
+	private boolean hasRoomInQuarry(RatQuarryBlockEntity quarry) {
+		for (int i = 0; i < quarry.getContainerSize(); i++) {
+			ItemStack stack = quarry.getItem(i);
+			if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isReadyToFire() {
+		if (this.nextStartTick > 0) {
+			this.nextStartTick--;
+			return false;
+		}
+		this.nextStartTick = this.adjustedTickDelay(RatConfig.ratHarvestDelay / 2);
+		return true;
+	}
+
+	private void resetTarget() {
+		List<BlockPos> allBlocks = new ArrayList<>();
+		GlobalPos quarryPos = this.rat.getDepositPos().orElse(null);
+		if (quarryPos != null && this.rat.level().getBlockEntity(quarryPos.pos()) instanceof RatQuarryBlockEntity quarry) {
+			int RADIUS = quarry.getRadius();
+			for (BlockPos pos : BlockPos.betweenClosedStream(quarryPos.pos().offset(-RADIUS, -1, -RADIUS), new BlockPos(quarryPos.pos().getX() + RADIUS, this.rat.level().getMinBuildHeight(), quarryPos.pos().getZ() + RADIUS)).map(BlockPos::immutable).toList()) {
+				if ((!this.rat.level().isEmptyBlock(pos) && this.doesListContainBlock(this.rat.level(), pos))) {
+					if (this.canMineBlock(pos)) {
+						allBlocks.add(pos);
+					}
+				}
+			}
+			if (!allBlocks.isEmpty()) {
+				allBlocks.sort(new QuarryBlockSorter(this.rat));
+				this.setTargetBlock(allBlocks.get(allBlocks.size() - 1));
+			}
+		}
+
+	}
+
+	private boolean doesListContainBlock(Level level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		ItemStack getStack = state.getBlock().getCloneItemStack(level, pos, state);
+		return this.rat.canRatPickupItem(getStack);
+	}
+
+	@Override
+	public boolean canContinueToUse() {
+		return this.checkTheBasics(false, false) && this.getTargetBlock() != null && !this.rat.level().getBlockState(this.getTargetBlock()).isAir();
+	}
+
+	public void stop() {
+		super.stop();
+		this.rat.crafting = false;
+	}
+
+	@Override
+	public void tick() {
+		if (this.getTargetBlock() != null) {
+			BlockPos rayPos = this.getOffsetFromTarget(this.rat.level(), this.getTargetBlock());
+			if (this.rat.isInLava() && this.rat.level().getBlockState(this.rat.blockPosition().above()).isAir()) {
+				this.rat.level().setBlockAndUpdate(this.rat.blockPosition().above(), Blocks.WATER.defaultBlockState());
+				this.rat.heal(15.0F);
+				this.rat.getJumpControl().jump();
+			}
+
+			if (this.rat.isInWater() && this.rat.level().getBlockState(this.rat.blockPosition().above()).isAir()) {
+				this.setTargetBlock(this.rat.blockPosition());
+				this.rat.level().setBlockAndUpdate(this.rat.blockPosition().above(), Blocks.SPONGE.defaultBlockState());
+				this.rat.getJumpControl().jump();
+			}
+
+			this.rat.getNavigation().moveTo(rayPos.getX(), rayPos.getY(), rayPos.getZ(), 1.0F);
+
+			double distance = this.rat.getRatDistanceCenterSq(this.getTargetBlock().getX() + 0.5D, this.getTargetBlock().getY() + 0.5D, this.getTargetBlock().getZ() + 0.5D);
+			if ((!this.rat.getMoveControl().hasWanted() || this.rat.hasFlightUpgrade()) && (this.rat.onGround() || this.rat.isFlying() || this.rat.isInWater() || this.rat.isInLava() || this.rat.isRidingSpecialMount())) {
+				BlockState block = this.rat.level().getBlockState(this.getTargetBlock());
+				SoundType soundType = block.getBlock().getSoundType(block, this.rat.level(), this.getTargetBlock(), null);
+
+				if (!block.isAir()) {
+					if (distance < this.rat.getRatHarvestDistance(5.0D)) {
+						this.rat.getNavigation().stop();
+
+						this.rat.level().broadcastEntityEvent(this.rat, (byte) 85);
+						this.rat.crafting = true;
+						if (block == prevMiningState) {
+							this.rat.level().broadcastEntityEvent(this.rat, (byte) 85);
+							this.rat.crafting = true;
+						} else {
+							this.rat.level().broadcastEntityEvent(this.rat, (byte) 86);
+							this.rat.crafting = false;
+						}
+						if (distance < this.rat.getRatHarvestDistance(-2.0D)) {
+							this.rat.setDeltaMovement(Vec3.ZERO);
+						}
+						this.breakingTime++;
+						int hardness = (int) (block.getDestroySpeed(this.rat.level(), this.getTargetBlock()) * 10);
+						int i = (int) ((float) this.breakingTime / hardness * 10.0F);
+						if (this.breakingTime % 5 == 0) {
+							this.rat.playSound(soundType.getHitSound(), soundType.getVolume() + 1, soundType.getPitch());
+						}
+						if (i != this.previousBreakProgress) {
+							this.rat.level().destroyBlockProgress(this.rat.getId(), this.getTargetBlock(), i);
+							this.previousBreakProgress = i;
+						}
+						if (this.breakingTime >= hardness) {
+							this.rat.level().broadcastEntityEvent(this.rat, (byte) 86);
+							this.rat.playSound(soundType.getBreakSound(), soundType.getVolume(), soundType.getPitch());
+							this.rat.playSound(SoundEvents.ITEM_PICKUP, 1, 1F);
+							this.breakingTime = 0;
+							this.previousBreakProgress = -1;
+							BlockState state = this.rat.level().getBlockState(this.getTargetBlock());
+							if (!state.is(Blocks.SPONGE) && !state.is(Blocks.WET_SPONGE)) {
+								List<ItemStack> drops = Block.getDrops(state, (ServerLevel) this.rat.level(), this.getTargetBlock(), null, this.rat, this.rat.getMainHandItem());
+								this.depositItemsToQuarry(drops);
+							}
+							this.rat.level().destroyBlock(this.getTargetBlock(), false);
+							this.stop();
+						}
+						this.prevMiningState = block;
+					}
+				}
+			}
+		}
+	}
+
+	private BlockPos getOffsetFromTarget(Level level, BlockPos initialPos) {
+		for (Direction direction : Direction.values()) {
+			if (level.getBlockState(initialPos.relative(direction)).isAir()) {
+				return initialPos.relative(direction);
+			}
+		}
+		return initialPos;
+	}
+
+	private boolean canMineBlock(BlockPos rayPos) {
+		BlockState state = this.rat.level().getBlockState(rayPos);
+		return !state.is(RatsBlockTags.QUARRY_IGNORABLES) && this.doesListContainBlock(this.rat.level(), rayPos) && RatUtils.canRatBreakBlock(this.rat.level(), rayPos, this.rat);
+	}
+
+	private void depositItemsToQuarry(List<ItemStack> items) {
+		RatQuarryBlockEntity quarry = this.getQuarry();
+		if (quarry == null) {
+			this.holdItemHarvestedIfPossible(this.rat, items);
+			return;
+		}
+
+		BlockPos dropPos = quarry.getBlockPos().above();
+		for (ItemStack stack : items) {
+			ItemStack remaining = ItemHandlerHelper.insertItem(quarry.itemHandler, stack.copy(), false);
+			if (!remaining.isEmpty()) {
+				ItemEntity item = new ItemEntity(this.rat.level(), dropPos.getX() + 0.5D, dropPos.getY() + 0.5D, dropPos.getZ() + 0.5D, remaining);
+				item.setExtendedLifetime();
+				this.rat.level().addFreshEntity(item);
+			}
+		}
+	}
+
+	public record QuarryBlockSorter(TamedRat rat) implements Comparator<BlockPos> {
+
+		@Override
+		public int compare(BlockPos pos1, BlockPos pos2) {
+			FluidState state1 = this.rat().level().getFluidState(pos2);
+			FluidState state2 = this.rat().level().getFluidState(pos1);
+			double distance1 = pos2.getY();
+			double distance2 = pos1.getY();
+			if (state1.isSource() && !state2.isSource()) {
+				return 1;
+			}
+			if (state2.isSource() && !state1.isSource()) {
+				return -1;
+			}
+			return Double.compare(distance2, distance1);
+		}
+	}
+}

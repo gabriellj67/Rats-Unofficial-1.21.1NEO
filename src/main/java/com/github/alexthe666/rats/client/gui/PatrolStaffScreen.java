@@ -1,0 +1,98 @@
+package com.github.alexthe666.rats.client.gui;
+
+import net.neoforged.neoforge.network.PacketDistributor;
+import com.github.alexthe666.rats.client.util.EntityRenderingUtil;
+import com.github.alexthe666.rats.registry.RatsItemRegistry;
+import com.github.alexthe666.rats.server.entity.rat.TamedRat;
+import com.github.alexthe666.rats.server.message.SyncRatTagPacket;
+import com.github.alexthe666.rats.server.misc.RatsLangConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PatrolStaffScreen extends Screen {
+
+	private final TamedRat rat;
+	private final BlockPos pos;
+	private final List<GlobalPos> nodes = new ArrayList<>();
+
+	public PatrolStaffScreen(TamedRat rat, BlockPos pos) {
+		super(Component.translatable(RatsItemRegistry.PATROL_STICK.get().getDescriptionId()));
+		this.rat = rat;
+		this.pos = pos;
+		this.nodes.clear();
+		this.nodes.addAll(rat.getPatrolNodes());
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		this.renderables.clear();
+		int i = this.width / 2;
+		int j = (this.height - 166) / 2;
+		Component addText = Component.translatable(RatsLangConstants.RAT_STAFF_ADD_NODE, this.pos.toShortString());
+		Component removeText = Component.translatable(RatsLangConstants.RAT_STAFF_REMOVE_NODE, this.pos.toShortString());
+		Component removeAllText = Component.translatable(RatsLangConstants.RAT_STAFF_REMOVE_NODES, this.pos.toShortString());
+		int maxLength = Math.max(150, Minecraft.getInstance().font.width(addText.getString()) + 20);
+		int removeIndex = -1;
+
+		for (int nodeIndex = 0; nodeIndex < this.nodes.size(); ++nodeIndex) {
+			if (this.pos.equals(this.nodes.get(nodeIndex).pos())) {
+				removeIndex = nodeIndex;
+			}
+		}
+
+		if (removeIndex == -1) {
+			this.addRenderableWidget(Button.builder(addText, button -> {
+				this.nodes.add(GlobalPos.of(Minecraft.getInstance().player.level().dimension(), this.pos));
+				this.rat.getPatrolNodes().add(GlobalPos.of(Minecraft.getInstance().player.level().dimension(), this.pos));
+				PacketDistributor.sendToServer(new SyncRatTagPacket(this.rat.getId(), this.nodes));
+				Minecraft.getInstance().setScreen(null);
+				this.init();
+			}).bounds(i - maxLength / 2, j + 60, maxLength, 20).build());
+		} else {
+			this.addRenderableWidget(Button.builder(removeText, button -> {
+				this.nodes.remove(GlobalPos.of(Minecraft.getInstance().player.level().dimension(), this.pos));
+				this.rat.getPatrolNodes().remove(GlobalPos.of(Minecraft.getInstance().player.level().dimension(), this.pos));
+				PacketDistributor.sendToServer(new SyncRatTagPacket(this.rat.getId(), this.nodes));
+				Minecraft.getInstance().setScreen(null);
+				this.init();
+			}).bounds(i - maxLength / 2, j + 60, maxLength, 20).build());
+		}
+
+		if (!this.nodes.isEmpty()) {
+			this.addRenderableWidget(Button.builder(removeAllText, button -> {
+				this.nodes.clear();
+				this.rat.getPatrolNodes().clear();
+				PacketDistributor.sendToServer(new SyncRatTagPacket(this.rat.getId(), this.nodes));
+				Minecraft.getInstance().setScreen(null);
+				this.init();
+			}).bounds(i - maxLength / 2, j + 110, maxLength, 20).build());
+		}
+
+	}
+
+	@Override
+	public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+		this.renderBackground(graphics, x, y, partialTicks);
+		super.render(graphics, x, y, partialTicks);
+		int i = (this.width - 248) / 2 + 10;
+		int j = (this.height - 166) / 2 + 8;
+		if (this.rat != null) {
+			EntityRenderingUtil.drawEntityOnScreen(graphics, i + 114, j + 40, 70, 0.0F, 0.0F, this.rat, true);
+		}
+
+	}
+
+	@Override
+	public boolean isPauseScreen() {
+		return false;
+	}
+}

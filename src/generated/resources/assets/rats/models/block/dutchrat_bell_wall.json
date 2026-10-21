@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/bell_wall",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "bar": "rats:block/pirat_log",
+    "particle": "rats:block/pirat_log"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": {
+        "type": "minecraft:uniform",
+        "max": 2.0,
+        "min": 0.0
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 8.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gold_nugget",
+          "weight": 40
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 4.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gold_ingot",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 3.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:iron_ingot",
+          "weight": 30
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:compass",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:map",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 6.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gunpowder",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 8.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:cod",
+          "weight": 50
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 4.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:cooked_cod",
+          "weight": 35
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:nautilus_shell",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:heart_of_the_sea",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 3.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "rats:cheese",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 2.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "rats:rat_pelt",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rats:pirat_hat",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": { "type": "minecraft:uniform", "max": 4.0, "min": 1.0 },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "rats:raw_rat",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "rats:rat_upgrade_basic",
+          "weight": 3
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 12.0,
+        "min": 4.0
+      }
+    }
+  ],
+  "random_sequence": "rats:chest/dutchrat_ship"
+}

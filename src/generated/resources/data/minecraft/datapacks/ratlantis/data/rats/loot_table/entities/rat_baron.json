@@ -1,0 +1,4 @@
+{
+  "type": "minecraft:entity",
+  "random_sequence": "rats:entities/rat_baron"
+}

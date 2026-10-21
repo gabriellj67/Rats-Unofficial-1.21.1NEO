@@ -1,0 +1,72 @@
+package com.github.alexthe666.rats.server.items;
+
+import com.github.alexthe666.rats.client.model.RatsModelLayers;
+import com.github.alexthe666.rats.client.model.hats.RatlantisArmorModel;
+import com.github.alexthe666.rats.registry.RatsArmorMaterialRegistry;
+import com.github.alexthe666.rats.registry.RatlantisItemRegistry;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.*;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+public class RatlantisArmorItem extends ArmorItem {
+
+	public RatlantisArmorItem(Holder<ArmorMaterial> material, Type type, Item.Properties properties) {
+		super(material, type, properties.durability(RatsArmorMaterialRegistry.durabilityFor(material, type)));
+	}
+
+	@Override
+	public net.minecraft.resources.ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+		return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+			"rats", "textures/model/armor/" + (slot == EquipmentSlot.LEGS ? "ratlantis_armor_1" : "ratlantis_armor_0") + ".png");
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+		super.appendHoverText(stack, context, tooltip, flag);
+		tooltip.add(Component.translatable("item.rats.ratlantis_armor.desc0").withStyle(ChatFormatting.YELLOW));
+		tooltip.add(Component.translatable("item.rats.ratlantis_armor.desc1").withStyle(ChatFormatting.GRAY));
+		tooltip.add(Component.translatable("item.rats.ratlantis_armor.desc2").withStyle(ChatFormatting.GRAY));
+	}
+
+	@Override
+	public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+		consumer.accept(new ClientExtensions());
+	}
+
+	@Override
+	public boolean isEnchantable(ItemStack stack) {
+		return true;
+	}
+
+	@Override
+	public int getEnchantmentValue() {
+		return 50;
+	}
+
+	@Override
+	public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
+		return repair.is(RatlantisItemRegistry.ORATCHALCUM_INGOT.get());
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	private static final class ClientExtensions implements IClientItemExtensions {
+		@Override
+		public @NotNull net.minecraft.client.model.HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack stack, EquipmentSlot slot, net.minecraft.client.model.HumanoidModel<?> original) {
+			net.minecraft.client.model.geom.EntityModelSet models = net.minecraft.client.Minecraft.getInstance().getEntityModels();
+			net.minecraft.client.model.geom.ModelPart root = models.bakeLayer(
+					slot == EquipmentSlot.LEGS ? RatsModelLayers.RATLANTIS_ARMOR_INNER : RatsModelLayers.RATLANTIS_ARMOR_OUTER);
+			return new RatlantisArmorModel(root);
+		}
+	}
+}

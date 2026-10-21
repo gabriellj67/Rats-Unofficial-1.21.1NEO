@@ -1,0 +1,59 @@
+package com.github.alexthe666.rats.server.block.entity;
+
+import com.github.alexthe666.rats.registry.RatsBlockEntityRegistry;
+import com.github.alexthe666.rats.server.block.TrashCanBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
+public class TrashCanBlockEntity extends BlockEntity {
+	public float lidProgress;
+	public float prevLidProgress;
+	public float partialTrashLevel;
+
+	public TrashCanBlockEntity(BlockPos pos, BlockState state) {
+		super(RatsBlockEntityRegistry.TRASH_CAN.get(), pos, state);
+		this.partialTrashLevel = 0.0F;
+	}
+
+	public static void tick(Level level, BlockPos pos, BlockState state, TrashCanBlockEntity te) {
+		te.prevLidProgress = te.lidProgress;
+		if (state.getValue(TrashCanBlock.OPEN) && te.lidProgress < 20.0F) {
+			te.lidProgress += 2.0F;
+		} else if (!state.getValue(TrashCanBlock.OPEN) && te.lidProgress > 0.0F) {
+			te.lidProgress -= 2.0F;
+		}
+	}
+
+	@Override
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
+	}
+
+	@Override
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
+		this.handleUpdateTag(packet.getTag(), registries);
+	}
+
+	@Override
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+		return this.saveWithId(registries);
+	}
+
+	@Override
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveAdditional(tag, registries);
+		tag.putFloat("PartialTrashLevel", this.partialTrashLevel);
+	}
+
+	@Override
+	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
+		this.partialTrashLevel = tag.getFloat("PartialTrashLevel");
+	}
+}

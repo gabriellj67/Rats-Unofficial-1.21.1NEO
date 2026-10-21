@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "I": {
+      "item": "minecraft:iron_pickaxe"
+    },
+    "O": {
+      "item": "minecraft:coal"
+    },
+    "U": {
+      "item": "rats:rat_upgrade_basic"
+    }
+  },
+  "pattern": [
+    "CIC",
+    "OUO",
+    "COC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "rats:rat_upgrade_miner_ore"
+  },
+  "show_notification": true
+}

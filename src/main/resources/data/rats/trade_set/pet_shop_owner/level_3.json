@@ -1,0 +1,5 @@
+{
+  "amount": 2.0,
+  "random_sequence": "rats:trade_set/pet_shop_owner/level_3",
+  "trades": "#rats:pet_shop_owner/level_3"
+}

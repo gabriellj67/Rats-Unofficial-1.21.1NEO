@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "rats:chunky_cheese_token"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "rats:square_chunky_cheese_token"
+  }
+}

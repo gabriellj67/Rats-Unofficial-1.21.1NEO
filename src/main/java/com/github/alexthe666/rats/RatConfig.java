@@ -1,0 +1,236 @@
+package com.github.alexthe666.rats;
+
+public class RatConfig {
+	//CLIENT
+	public static boolean plagueHearts = true;
+	public static boolean singleRowPlagueHearts = false;
+	public static boolean funnyFluteSound = true;
+	public static boolean synesthesiaShader = true;
+	public static boolean ratFartNoises = true;
+	public static boolean ratGodGlint = true;
+	public static boolean ratAngelGlint = true;
+
+	// SERVER
+	public static boolean ratlantisEnabledByDefault = true;
+	public static int ratSpawnDecrease = 5;
+	public static int piperSpawnDecrease = 2;
+	public static boolean ratsSpawnLikeMonsters = true;
+	public static boolean cheesemaking = true;
+	public static int milkCauldronTime = 150;
+	public static int ratSackCapacity = 16;
+	public static boolean ratsDigBlocks = true;
+	public static boolean ratsBreakCrops = true;
+	public static boolean ratsStealItems = true;
+	public static boolean ratsContaminateFood = true;
+	public static boolean ratsClimbOverFences = true;
+	public static boolean golemsTargetRats = true;
+	public static boolean villagePetShops = true;
+	public static int villagePetShopWeight = 13;
+	public static int zombieVillagePetShopWeight = 9;
+	public static boolean villageGarbageHeaps = true;
+	public static int villageGarbageHeapWeight = 3;
+	public static int zombieVillageGarbageHeapWeight = 6;
+	public static boolean ratsBreakBlockOnHarvest = true;
+	public static boolean plagueSpread = true;
+	public static float ratStrengthThreshold = 6.0F;
+	public static int ratFluteDistance = 2;
+	public static int ratCageCramming = 4;
+	public static int ratBreedingCooldown = 24000;
+	public static int ratUpdateDelay = 100;
+	public static final int ratHarvestDelay = 20;
+	public static final int defaultRatRadius = 8;
+	public static int maxRatRadius = 16;
+	public static double garbageSpawnRate = 0.05F;
+	public static int maxRatLitterSize = 1;
+	public static boolean ratsSpawnWithSantaHats = false;
+	public static boolean ratsSpawnWithPartyHats = false;
+
+	public static int ratArmorMultiplier = 3;
+	public static boolean ratsChargeHeldItems = true;
+	public static int ratRFTransferBasic = 1000;
+	public static int ratChargeBasic = 10;
+	public static int ratRFTransferAdvanced = 5000;
+	public static int ratChargeAdvanced = 50;
+	public static int ratRFTransferElite = 10000;
+	public static int ratChargeElite = 100;
+	public static int ratRFTransferExtreme = 100000;
+	public static int ratChargeExtreme = 500;
+	public static int upgradeRegenRate = 30;
+	public static double warriorHealthUpgrade = 40.0D;
+	public static double warriorDamageUpgrade = 5.0D;
+	public static double warriorArmorUpgrade = 10.0D;
+	public static double godHealthUpgrade = 150.0D;
+	public static double godDamageUpgrade = 15.0D;
+	public static double godArmorUpgrade = 10.0D;
+	public static double dragonHealthUpgrade = 50.0D;
+	public static double dragonDamageUpgrade = 8.0D;
+	public static double dragonArmorUpgrade = 5.0D;
+	public static double demonHealthUpgrade = 40.0D;
+	public static double demonDamageUpgrade = 4.0D;
+	public static double voodooHealthUpgrade = 100.0D;
+	public static double ratVoodooDistance = 32;
+	public static double ratinatorArmorUpgrade = 15.0D;
+	public static double nonbelieverHealthUpgrade = 350.0D;
+	public static double nonbelieverDamageUpgrade = 40.0D;
+	public static double nonbelieverArmorUpgrade = 20.0D;
+	public static final boolean ratPsychicThrowsBlocks = false;
+	public static double carratDamagePerBite = 0.0D;
+
+	public static boolean blackDeathLightning = true;
+	public static boolean bdConstantRatSpawns = true;
+	public static int bdMaxRatSpawns = 15;
+	public static boolean bdConstantCloudSpawns = true;
+	public static int bdMaxCloudSpawns = 3;
+	public static boolean bdConstantBeastSpawns = false;
+	public static int bdMaxBeastSpawns = 4;
+
+	public static boolean ratKingReabsorbsRats = true;
+	public static double ratKingReabsorbHealRate = 0.0D;
+	public static boolean ratKingConstantRatSpawns = true;
+	public static int ratKingMaxRatSpawns = 10;
+
+	public static boolean summonAutomatonOnlyInRatlantis = false;
+	public static int automatonShootChance = 2;
+	public static int automatonMeleeDistance = 7;
+	public static int automatonRangedDistance = 10;
+
+	public static boolean summonNeoOnlyInRatlantis = false;
+	public static boolean neoratlanteanSummonLaserPortals = true;
+	public static int neoratlanteanLaserAttackCooldown = 100;
+	public static boolean neoratlanteanSummonFakeLightning = true;
+	public static int neoratlanteanLightningAttackCooldown = 40;
+	public static boolean neoratlanteanThrowBlocks = true;
+	public static int neoratlanteanBlockAttackCooldown = 40;
+	public static boolean neoratlanteanAddHarmfulEffects = true;
+	public static int neoratlanteanEffectAttackCooldown = 100;
+
+	public static boolean summonDutchratOnlyInRatlantis = false;
+	public static int dutchratSwordThrowChance = 5;
+	public static int dutchratRestrictionRadius = 20;
+
+	public static boolean summonBaronOnlyInRatlantis = false;
+	public static int ratBaronYFlight = 20;
+	public static int ratBaronShootFrequency = 2;
+	public static double ratBaronBulletDamage = 0.5D;
+
+	public static void bakeClient() {
+		try {
+			plagueHearts = ConfigHolder.CLIENT.plagueHearts.get();
+			singleRowPlagueHearts = ConfigHolder.CLIENT.singleRowPlagueOverlay.get();
+			synesthesiaShader = ConfigHolder.CLIENT.synesthesiaShader.get();
+			funnyFluteSound = ConfigHolder.CLIENT.funnyFluteSound.get();
+			ratFartNoises = ConfigHolder.CLIENT.ratFartNoises.get();
+			ratGodGlint = ConfigHolder.CLIENT.ratGodGlint.get();
+			ratAngelGlint = ConfigHolder.CLIENT.ratAngelGlint.get();
+		} catch (Exception e) {
+			RatsMod.LOGGER.warn("An exception was caused trying to load the config for Rats.", e);
+		}
+	}
+
+	public static void bakeServer() {
+		try {
+			ratlantisEnabledByDefault = ConfigHolder.SERVER.ratlantisEnabledByDefault.get();
+
+			ratSpawnDecrease = ConfigHolder.SERVER.ratSpawnDecrease.get();
+			piperSpawnDecrease = ConfigHolder.SERVER.piperSpawnDecrease.get();
+
+			ratsSpawnLikeMonsters = ConfigHolder.SERVER.ratsSpawnLikeMonsters.get();
+			cheesemaking = ConfigHolder.SERVER.cheesemaking.get();
+			milkCauldronTime = ConfigHolder.SERVER.milkCauldronTime.get();
+			ratSackCapacity = ConfigHolder.SERVER.ratSackCapacity.get();
+			ratsDigBlocks = ConfigHolder.SERVER.ratsDigBlocks.get();
+			ratsBreakCrops = ConfigHolder.SERVER.ratsBreakCrops.get();
+			ratsStealItems = ConfigHolder.SERVER.ratsStealItems.get();
+			ratsClimbOverFences = ConfigHolder.SERVER.ratsClimbOverFences.get();
+			ratsContaminateFood = ConfigHolder.SERVER.ratsContaminateFood.get();
+			golemsTargetRats = ConfigHolder.SERVER.golemsTargetRats.get();
+			villagePetShops = ConfigHolder.SERVER.villagePetShops.get();
+			villagePetShopWeight = ConfigHolder.SERVER.villagePetShopWeight.get();
+			zombieVillagePetShopWeight = ConfigHolder.SERVER.zombieVillagePetShopWeight.get();
+			villageGarbageHeaps = ConfigHolder.SERVER.villageGarbageHeaps.get();
+			villageGarbageHeapWeight = ConfigHolder.SERVER.villageGarbageHeapWeight.get();
+			zombieVillageGarbageHeapWeight = ConfigHolder.SERVER.zombieVillageGarbageHeapWeight.get();
+			ratsBreakBlockOnHarvest = ConfigHolder.SERVER.ratsBreakBlockOnHarvest.get();
+			plagueSpread = ConfigHolder.SERVER.plagueSpread.get();
+			ratStrengthThreshold = ConfigHolder.SERVER.ratStrengthThreshold.get().floatValue();
+			ratFluteDistance = ConfigHolder.SERVER.ratFluteDistance.get();
+			ratCageCramming = ConfigHolder.SERVER.ratCageCramming.get();
+			ratUpdateDelay = ConfigHolder.SERVER.ratUpdateDelay.get();
+			garbageSpawnRate = ConfigHolder.SERVER.garbageSpawnRate.get();
+			maxRatLitterSize = ConfigHolder.SERVER.maxRatLitterSize.get();
+			ratBreedingCooldown = ConfigHolder.SERVER.ratBreedingCooldown.get();
+			ratsSpawnWithSantaHats = ConfigHolder.SERVER.ratsSpawnWithSantaHats.get();
+			ratsSpawnWithPartyHats = ConfigHolder.SERVER.ratsSpawnWithPartyHats.get();
+			maxRatRadius = ConfigHolder.SERVER.maxRatRadius.get();
+
+			ratArmorMultiplier = ConfigHolder.SERVER.ratArmorMultiplier.get();
+			ratsChargeHeldItems = ConfigHolder.SERVER.ratsChargeHeldItems.get();
+			upgradeRegenRate = ConfigHolder.SERVER.upgradeRegenRate.get();
+			ratRFTransferBasic = ConfigHolder.SERVER.ratRFTransferBasic.get();
+			ratChargeBasic = ConfigHolder.SERVER.ratChargeBasic.get();
+			ratRFTransferAdvanced = ConfigHolder.SERVER.ratRFTransferAdvanced.get();
+			ratChargeAdvanced = ConfigHolder.SERVER.ratChargeAdvanced.get();
+			ratRFTransferElite = ConfigHolder.SERVER.ratRFTransferElite.get();
+			ratChargeElite = ConfigHolder.SERVER.ratChargeElite.get();
+			ratRFTransferExtreme = ConfigHolder.SERVER.ratRFTransferExtreme.get();
+			ratChargeExtreme = ConfigHolder.SERVER.ratChargeExtreme.get();
+			warriorHealthUpgrade = ConfigHolder.SERVER.warriorHealthUpgrade.get();
+			warriorArmorUpgrade = ConfigHolder.SERVER.warriorArmorUpgrade.get();
+			warriorDamageUpgrade = ConfigHolder.SERVER.warriorDamageUpgrade.get();
+			godHealthUpgrade = ConfigHolder.SERVER.godHealthUpgrade.get();
+			godArmorUpgrade = ConfigHolder.SERVER.godArmorUpgrade.get();
+			godDamageUpgrade = ConfigHolder.SERVER.godDamageUpgrade.get();
+			dragonHealthUpgrade = ConfigHolder.SERVER.dragonHealthUpgrade.get();
+			dragonArmorUpgrade = ConfigHolder.SERVER.dragonArmorUpgrade.get();
+			dragonDamageUpgrade = ConfigHolder.SERVER.dragonDamageUpgrade.get();
+			demonHealthUpgrade = ConfigHolder.SERVER.demonHealthUpgrade.get();
+			demonDamageUpgrade = ConfigHolder.SERVER.demonDamageUpgrade.get();
+			voodooHealthUpgrade = ConfigHolder.SERVER.voodooHealthUpgrade.get();
+			ratVoodooDistance = ConfigHolder.SERVER.ratVoodooDistance.get();
+			ratinatorArmorUpgrade = ConfigHolder.SERVER.ratinatorArmorUpgrade.get();
+			nonbelieverHealthUpgrade = ConfigHolder.SERVER.nonbelieverHealthUpgrade.get();
+			nonbelieverArmorUpgrade = ConfigHolder.SERVER.nonbelieverArmorUpgrade.get();
+			nonbelieverDamageUpgrade = ConfigHolder.SERVER.nonbelieverDamageUpgrade.get();
+			carratDamagePerBite = ConfigHolder.SERVER.carratDamagePerBite.get();
+
+			blackDeathLightning = ConfigHolder.SERVER.blackDeathLightning.get();
+			bdConstantRatSpawns = ConfigHolder.SERVER.bdConstantRatSpawns.get();
+			bdMaxRatSpawns = ConfigHolder.SERVER.bdMaxRatSpawns.get();
+			bdConstantCloudSpawns = ConfigHolder.SERVER.bdConstantCloudSpawns.get();
+			bdMaxCloudSpawns = ConfigHolder.SERVER.bdMaxCloudSpawns.get();
+			bdConstantBeastSpawns = ConfigHolder.SERVER.bdConstantBeastSpawns.get();
+			bdMaxBeastSpawns = ConfigHolder.SERVER.bdMaxBeastSpawns.get();
+
+			ratKingReabsorbsRats = ConfigHolder.SERVER.ratKingReabsorbsRats.get();
+			ratKingReabsorbHealRate = ConfigHolder.SERVER.ratKingReabsorbHealRate.get();
+			ratKingConstantRatSpawns = ConfigHolder.SERVER.ratKingConstantRatSpawns.get();
+			ratKingMaxRatSpawns = ConfigHolder.SERVER.ratKingMaxRatSpawns.get();
+
+			summonAutomatonOnlyInRatlantis = ConfigHolder.SERVER.summonAutomatonOnlyInRatlantis.get();
+			automatonShootChance = ConfigHolder.SERVER.automatonShootChance.get();
+			automatonMeleeDistance = ConfigHolder.SERVER.automatonMeleeDistance.get();
+			automatonRangedDistance = ConfigHolder.SERVER.automatonRangedDistance.get();
+
+			summonNeoOnlyInRatlantis = ConfigHolder.SERVER.summonNeoOnlyInRatlantis.get();
+			neoratlanteanSummonLaserPortals = ConfigHolder.SERVER.neoratlanteanSummonLaserPortals.get();
+			neoratlanteanLaserAttackCooldown = ConfigHolder.SERVER.neoratlanteanLaserAttackCooldown.get();
+			neoratlanteanSummonFakeLightning = ConfigHolder.SERVER.neoratlanteanSummonFakeLightning.get();
+			neoratlanteanLightningAttackCooldown = ConfigHolder.SERVER.neoratlanteanLightningAttackCooldown.get();
+			neoratlanteanThrowBlocks = ConfigHolder.SERVER.neoratlanteanThrowBlocks.get();
+			neoratlanteanBlockAttackCooldown = ConfigHolder.SERVER.neoratlanteanBlockAttackCooldown.get();
+			neoratlanteanAddHarmfulEffects = ConfigHolder.SERVER.neoratlanteanAddHarmfulEffects.get();
+			neoratlanteanEffectAttackCooldown = ConfigHolder.SERVER.neoratlanteanEffectAttackCooldown.get();
+
+			summonDutchratOnlyInRatlantis = ConfigHolder.SERVER.summonDutchratOnlyInRatlantis.get();
+			dutchratSwordThrowChance = ConfigHolder.SERVER.dutchratSwordThrowChance.get();
+			dutchratRestrictionRadius = ConfigHolder.SERVER.dutchratRestrictionRadius.get();
+
+			summonBaronOnlyInRatlantis = ConfigHolder.SERVER.summonBaronOnlyInRatlantis.get();
+			ratBaronYFlight = ConfigHolder.SERVER.ratBaronYFlight.get();
+			ratBaronBulletDamage = ConfigHolder.SERVER.ratBaronBulletDamage.get();
+			ratBaronShootFrequency = ConfigHolder.SERVER.ratBaronShootFrequency.get();
+		} catch (Exception e) {
+			RatsMod.LOGGER.warn("An exception was caused trying to load the config for Rats.", e);
+		}
+	}
+}

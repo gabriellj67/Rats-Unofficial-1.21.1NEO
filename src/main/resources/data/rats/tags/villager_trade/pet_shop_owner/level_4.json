@@ -1,0 +1,11 @@
+{
+  "values": [
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_basic",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_jury_rigged",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_blacklist",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_whitelist",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_speed",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_health",
+    "rats:pet_shop_owner/4/emerald_to_rat_upgrade_armor"
+  ]
+}

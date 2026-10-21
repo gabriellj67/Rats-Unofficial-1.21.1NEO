@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_block"
+    },
+    "D": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "O": {
+      "item": "rats:rat_upgrade_miner_ore"
+    }
+  },
+  "pattern": [
+    "GDG",
+    "GOG",
+    "GBG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "rats:rat_upgrade_miner"
+  },
+  "show_notification": true
+}

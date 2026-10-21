@@ -1,0 +1,36 @@
+package com.github.alexthe666.rats.server.entity.ai.navigation.navigation;
+
+import com.github.alexthe666.rats.server.entity.rat.TamedRat;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.level.Level;
+
+public class RatFlightNavigation extends GroundPathNavigation {
+
+	public final TamedRat rat;
+
+	public RatFlightNavigation(TamedRat rat, Level level) {
+		super(rat, level);
+		this.rat = rat;
+	}
+
+	public void tick() {
+		this.tick++;
+	}
+
+	@Override
+	public void stop() {
+		super.stop();
+		this.rat.getMoveControl().strafe(0.0F, 0.0F);
+	}
+
+	public boolean moveTo(double x, double y, double z, double speed) {
+		this.rat.getMoveControl().setWantedPosition(x, y, z, speed);
+		return true;
+	}
+
+	public boolean moveTo(Entity entity, double speed) {
+		this.rat.getMoveControl().setWantedPosition(entity.getX(), entity.getY(), entity.getZ(), speed);
+		return true;
+	}
+}

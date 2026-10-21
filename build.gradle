@@ -1,0 +1,127 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.141'
+}
+
+def secrets = new Properties()
+def secretsFile = file('secrets.properties')
+if (secretsFile.exists()) {
+    secretsFile.withInputStream { stream -> secrets.load(stream) }
+
+    fileTree("secrets").matching {
+        include "**/*.properties"
+    }.each { File file ->
+        file.withInputStream { stream -> secrets.load(stream) }
+    }
+}
+
+version = "${project.minecraft_version}-${project.mod_version}"
+group = 'com.github.alexthe666.rats'
+
+base {
+    archivesName = mod_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:all,-classfile,-processing,-deprecation,-serial,-this-escape' << '-Xmaxerrs' << '5000'
+}
+
+repositories {
+    maven {
+        name = 'Curseforge Maven'
+        url = 'https://www.cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+    maven {
+        name = "Jared's Maven" // JEI
+        url = 'https://maven.blamejared.com/'
+    }
+}
+
+neoForge {
+    version = project.neoforge_version
+
+    accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
+    validateAccessTransformers = true
+
+    runs {
+        configureEach {
+            systemProperty 'forge.logging.console.level', 'debug'
+            systemProperty 'fml.earlyprogresswindow', 'false'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+
+        client {
+            client()
+            programArguments.addAll '--username', (secrets.getProperty('username') ?: 'Dev')
+            if (secrets.getProperty('uuid')) {
+                programArguments.addAll '--uuid', secrets.getProperty('uuid')
+            }
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+        }
+
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+        }
+
+        data {
+            data()
+            programArguments.addAll(
+                    '--mod', mod_id,
+                    '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources/').absolutePath
+            )
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+
+tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+dependencies {
+    implementation "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
+    implementation "curse.maven:citadel-331936:${project.citadel_file_id}"
+    implementation "curse.maven:jade-324717:${project.jade_file_id}"
+    compileOnly "curse.maven:just-enough-resources-jer-240630:${project.jer_file_id}"
+    // Earthworks Reborn — use local file since CurseForge Maven may not have it yet
+    def ewJar = file("${System.getProperty('user.home')}/curseforge/minecraft/Instances/ne/mods/earthworks-3.2.1.jar")
+    if (ewJar.exists()) {
+        compileOnly files(ewJar)
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : 'AlexThe666',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : 'AlexThe666',
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}

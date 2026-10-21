@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "travelersbackpack"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:strings"
+    },
+    "D": {
+      "tag": "c:chests/wooden"
+    },
+    "U": {
+      "item": "rats:rat_upgrade_basic"
+    },
+    "X": {
+      "tag": "c:leathers"
+    }
+  },
+  "pattern": [
+    "XBX",
+    " D ",
+    "XUX"
+  ],
+  "result": {
+    "count": 1,
+    "id": "rats:rat_upgrade_travelers_backpack"
+  }
+}

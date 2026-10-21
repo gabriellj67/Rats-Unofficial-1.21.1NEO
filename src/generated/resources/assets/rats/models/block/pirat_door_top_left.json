@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/door_top_left",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "bottom": "rats:block/pirat_door_bottom",
+    "top": "rats:block/pirat_door_top"
+  }
+}

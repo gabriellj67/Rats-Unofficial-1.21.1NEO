@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "rats:psionic_rat_brain"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "rats:entities/neo_ratlantean"
+}
