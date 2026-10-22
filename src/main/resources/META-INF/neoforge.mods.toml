@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="${loader_version_range}"
-issueTrackerURL="https://github.com/eba67/Rats-Fix-Port--1.21.1/issues"
+issueTrackerURL="https://legacy.curseforge.com/minecraft/mc-mods/rats-unofficial-fixed/issues"
 license="GNU LESSER GENERAL PUBLIC LICENSE"
 
 [[mods]]
@@ -23,7 +23,7 @@ description='''What are we going to do today Pinky?'''
 [[dependencies.rats]]
     modId="citadel"
     type="required"
-    versionRange="[2.7.0,)"
+    versionRange="[2.7.6,)"
     ordering="AFTER"
     side="BOTH"
 
